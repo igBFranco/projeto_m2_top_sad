@@ -7,6 +7,7 @@ const { Telegraf, Markup } = require("telegraf");
 // importando a biblioteca 'Telegraf-Session'
 const LocalSession = require("telegraf-session-local");
 
+const axios = require('axios');
 /**
  * criando o objeto 'bot' e o instanciando
  * como um novo objeto da classe 'Telegraf'
@@ -15,10 +16,21 @@ const bot = new Telegraf(env.token);
 // definindo que o bot utilizará o armazenamento em sessão
 bot.use(new LocalSession({ database: "example_db.json" }).middleware());
 
+//criando um array para salvar os pratos do cardapio
+let pratos = []
+
+async function pratosAPI() {
+  await axios.get("http://localhost:3000/api/plates/").then((res) => {
+    pratos = res.data;
+  });
+  console.log(pratos)
+}
+
 // criando o nosso teclado
-const teclado_pratos = Markup.keyboard([
-  ["🥩Prato 1", "🍤Prato 2", "🥗Prato 3"],
-]).resize();
+const teclado_pratos = Markup.keyboard(
+  pratos.map((item) => Markup.button.callback(item, item.name)),
+  { columns: 3 }
+).resize();
 const teclado_lanches = Markup.keyboard([
   ["🥪Lanche 1", " 🥨 Lanche 2"],
 ]).resize();
@@ -48,6 +60,7 @@ bot.start(async (ctx) => {
   const from = ctx.update.message.from;
   await ctx.reply(`Seja bem vindo ${from.first_name}`);
   await ctx.reply("Escolha o cardapio que deseja", CardButtons);
+  pratosAPI();
   //criando um array para armazenar os itens da sessão
   ctx.session.list = []
 });
