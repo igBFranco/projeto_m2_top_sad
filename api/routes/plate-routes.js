@@ -2,7 +2,7 @@
 
 //realizando as importacoes
 const express = require('express');
-const controller = require('../controllers/workerController');
+const controller = require('../controllers/plateController');
 const router = express.Router();
 const auth = require('../middlewares/authentication');
 
