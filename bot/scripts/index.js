@@ -48,6 +48,8 @@ bot.start(async (ctx) => {
   const from = ctx.update.message.from;
   await ctx.reply(`Seja bem vindo ${from.first_name}`);
   await ctx.reply("Escolha o cardapio que deseja", CardButtons);
+  //criando um array para armazenar os itens da sessão
+  ctx.session.list = []
 });
 
 bot.action(/card_pratos/, (ctx) => {
@@ -73,6 +75,7 @@ bot.action(/finish/, (ctx) => {
       { columns: 3 }
     )
   );
+  ctx.reply(`Seu pedido: ${ctx.session.list}`, itemsButtons(ctx.session.list));
 });
 bot.action(/finaliza_pedido/, (ctx) => {
   ctx.reply("Seu pedido foi concluido com sucesso!");
@@ -87,8 +90,7 @@ bot.action(/cancelar/, (ctx) => {
 bot.on("text", (ctx) => {
   let item = ctx.update.message.text;
   // adicionando o item à lista da sessão
-  //ctx.session.list.push(item);                ------------- NAO ESTA ADICIONANDO O ITEM A LISTA
-
+  ctx.session.list.push(item);                
   ctx.reply(
     `O item ${item} foi adicionado a sua comanda \n pode adicionar mais itens se quiser!`,
     Markup.inlineKeyboard(
