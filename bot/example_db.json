@@ -1,0 +1,29 @@
+{
+  "sessions": [
+    {
+      "id": "1351450134:1351450134",
+      "data": {
+        "list": [
+          "LEITE",
+          "ÁGUA",
+          "REFRIGERANTE",
+          "CAFÉ",
+          "PIZZA",
+          "X-SALADA",
+          "CHUCHU",
+          "REPOLHO",
+          "ALFACE",
+          "GOIABA"
+        ]
+      }
+    },
+    {
+      "id": "1450408708:1450408708",
+      "data": {
+        "list": [
+          "PRESUNTO"
+        ]
+      }
+    }
+  ]
+}
