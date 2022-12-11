@@ -1,6 +1,6 @@
 class Plate {
     //implementando o construtor da classe
-    constructor(id, name, description, price) {
+    constructor(id, name, description, price, image) {
         this.id = id;
         this.name = name;
         this.description = description;
