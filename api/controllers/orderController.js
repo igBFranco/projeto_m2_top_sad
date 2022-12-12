@@ -1,6 +1,6 @@
 'use strict'
 
-const orderRepository = require('../repositories/costumer-repository')
+const orderRepository = require('../repositories/order-repository')
 const ctrlBase = require('../bin/base/controller-base')
 const validators = require('../bin/lib/validators')
 const _repo = new orderRepository()
