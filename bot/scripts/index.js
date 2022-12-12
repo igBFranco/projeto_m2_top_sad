@@ -19,24 +19,27 @@ bot.use(new LocalSession({ database: "example_db.json" }).middleware());
 //criando um array para salvar os pratos do cardapio
 let pratos = []
 
+let pratosName = []
+
+let list = []
+
+//função para buscar os pratos da API
 async function pratosAPI() {
-  await axios.get("http://localhost:3000/api/plates/").then((res) => {
-    pratos = res.data;
-  });
-  console.log(pratos)
+  let res = await axios.get("http://localhost:3000/api/plates/")
+  pratos = res.data
+  return pratos;
+  //console.log(pratos)
 }
 
 // criando o nosso teclado
 const teclado_pratos = Markup.keyboard(
-  pratos.map((item) => Markup.button.callback(item, item.name)),
+  pratos.forEach((prato) => { return prato.name }),
   { columns: 3 }
 ).resize();
-const teclado_lanches = Markup.keyboard([
-  ["🥪Lanche 1", " 🥨 Lanche 2"],
-]).resize();
-const teclado_saladas = Markup.keyboard([
-  ["🥗 Salada 1", "🥦 Salada 2", "🌯Salada 3"],
-]).resize();
+const teclado_lanches = Markup.keyboard(
+  ["Uramaki Salmão", "Uramaki Philadelphia", "Temaki Salmão"]
+).resize();
+
 
 // criando um 'Inline Keyboard' dinâmico
 const itemsButtons = (list) =>
@@ -45,11 +48,11 @@ const itemsButtons = (list) =>
     { columns: 3 }
   );
 
+
 const CardButtons = Markup.inlineKeyboard(
   [
-    Markup.button.callback("Pratos", "card_pratos"),
-    Markup.button.callback("Lanches", "card_lanches"),
-    Markup.button.callback("Saladas", "card_saladas"),
+    Markup.button.callback("Cardápio", "card_cardapio"),
+    Markup.button.callback("Pedido", "card_pratos"),
     Markup.button.callback("Cancelar", "cancelar"),
   ],
   { columns: 3 }
@@ -57,25 +60,25 @@ const CardButtons = Markup.inlineKeyboard(
 
 // exibindo a mensagem inicial do bot
 bot.start(async (ctx) => {
+  pratosAPI();
   const from = ctx.update.message.from;
   await ctx.reply(`Seja bem vindo ${from.first_name}`);
-  await ctx.reply("Escolha o cardapio que deseja", CardButtons);
-  pratosAPI();
+  await ctx.reply("Escolha a opção que deseja", CardButtons);
   //criando um array para armazenar os itens da sessão
   ctx.session.list = []
 });
 
 bot.action(/card_pratos/, (ctx) => {
-  ctx.reply(`Pode escolher seu Prato por gentileza!`, teclado_pratos);
+  ctx.reply(`Pode escolher seu Prato por gentileza!`, teclado_lanches);
 });
-bot.action(/card_lanches/, (ctx) => {
-  ctx.reply(`Pode escolher seu Lanche por gentileza!`, teclado_lanches);
-});
-bot.action(/card_saladas/, (ctx) => {
-  ctx.reply(`Pode escolher sua Salada por gentileza!`, teclado_saladas);
-});
+bot.action(/card_cardapio/, (ctx) => {
+  ctx.reply(`Cardápio`)
+  pratos.forEach((prato) => {
+    ctx.replyWithPhoto({url: `${prato.image}`}, {caption: `${prato.name}, Preço: ${prato.price}`})
+  }
+)});
 bot.action(/back/, (ctx) => {
-  ctx.reply("Escolha o cardapio que deseja", CardButtons);
+  ctx.reply("Escolha a opção que deseja", CardButtons);
 });
 bot.action(/finish/, (ctx) => {
   ctx.reply(
@@ -115,6 +118,13 @@ bot.on("text", (ctx) => {
     )
   );
 });
+
+
+// removendo os itens da lista quando clicar no botão
+bot.action(/remove (.+)/, ctx => {
+  list = list.filter(item => item !== ctx.match[1])
+  ctx.reply(`o item ${ctx.match[1]} foi removido da sua lista!`, itemsButtons(list))
+})
 
 /**
 
